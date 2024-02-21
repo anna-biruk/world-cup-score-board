@@ -14,8 +14,8 @@ describe("Game.ts", () => {
     const homeTeam = new Team(2, "Poland");
     const awayTeam = new Team(1, "England");
     const game = new Game(homeTeam, awayTeam);
-    expect(game.totalScore).tobe(3);
+    expect(game.totalScore).toBe(3);
     game.updateScore(3, 2);
-    expect(game.totalScore).tobe(5);
+    expect(game.totalScore).toBe(5);
   });
 });

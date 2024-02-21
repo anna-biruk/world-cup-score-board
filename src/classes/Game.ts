@@ -1,7 +1,8 @@
 import Team from "./Team";
+import { v4 as uuidv4 } from "uuid";
 
 class Game {
-  public id: string = uuid();
+  public id: string = uuidv4();
   public homeTeam: Team;
   public awayTeam: Team;
 
@@ -10,10 +11,13 @@ class Game {
     this.awayTeam = awayTeam;
   }
 
-  updateScore() {}
+  updateScore(homeScore: number, awayScore: number) {
+    this.homeTeam.score = homeScore;
+    this.awayTeam.score = awayScore;
+  }
 
   get totalScore() {
-    return;
+    return this.homeTeam.score + this.awayTeam.score;
   }
 }
 export default Game;
