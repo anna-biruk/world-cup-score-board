@@ -32,12 +32,10 @@ const SummaryGamesModal = ({
             <Dialog.Panel>
               {orderedGames.map((game) => {
                 return (
-                  <>
-                    <div>
-                      Home Team: {game.homeTeam.name} - {game.homeTeam.score},
-                      Away Team: {game.awayTeam.name} - {game.awayTeam.score}
-                    </div>
-                  </>
+                  <div key={game.id}>
+                    Home Team: {game.homeTeam.name} - {game.homeTeam.score},
+                    Away Team: {game.awayTeam.name} - {game.awayTeam.score}
+                  </div>
                 );
               })}
               <button
