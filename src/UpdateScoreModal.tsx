@@ -76,7 +76,7 @@ const UpdateScoreModal = ({
               <div className="mt-4">
                 <button
                   onClick={handleUpdateScore}
-                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-gray-400 border border-transparent rounded-md"
+                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-400 border border-transparent rounded-md"
                 >
                   Update Score
                 </button>

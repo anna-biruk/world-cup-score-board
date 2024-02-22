@@ -4,15 +4,18 @@ import ScoreBoard from "./models/ScoreBoard";
 import Team from "./models/Team";
 import { createPortal } from "react-dom";
 import UpdateScoreModal from "./UpdateScoreModal";
+import SummaryGamesModal from "./SummaryGamesModal";
 
 const scoreboardManager = new ScoreBoard();
 
 const LiveScoreboard = () => {
   const [games, setGames] = useState<Game[]>([]);
+  const [summary, setSummary] = useState<Game[]>([]);
   const [homeTeamName, setHomeTeamName] = useState("");
   const [awayTeamName, setAwayTeamName] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
 
   const startGame = () => {
     const newGame = new Game(
@@ -35,6 +38,10 @@ const LiveScoreboard = () => {
     refreshGames();
   };
 
+  const getSummary = () => {
+    setSummary(scoreboardManager.getSummary());
+  };
+
   const refreshGames = () => {
     setGames(scoreboardManager.games);
   };
@@ -43,8 +50,27 @@ const LiveScoreboard = () => {
       <h1 className="text-lg font-medium">
         Live Football World Cup Scoreboard
       </h1>
-      <div>
+      <button
+        className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white  bg-green-400  border border-transparent rounded-md"
+        onClick={() => {
+          setShowSummaryModal(true);
+          getSummary();
+        }}
+      >
+        Get summary
+      </button>
+      {showSummaryModal &&
+        createPortal(
+          <SummaryGamesModal
+            onClose={() => setShowSummaryModal(false)}
+            isOpen={showSummaryModal}
+            orderedGames={summary}
+          />,
+          document.body
+        )}
+      <div className=" flex gap-2 mt-2">
         <input
+          className="border border-gray-400 rounded-lg p-2"
           type="text"
           placeholder="Home Team"
           value={homeTeamName}
@@ -52,12 +78,13 @@ const LiveScoreboard = () => {
         />
         <input
           type="text"
+          className="border border-gray-400 rounded-lg p-2"
           placeholder="Away Team"
           value={awayTeamName}
           onChange={(e) => setAwayTeamName(e.target.value)}
         />
         <button
-          className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white  bg-gray-400  border border-transparent rounded-md"
+          className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white  bg-blue-400  border border-transparent rounded-md"
           onClick={startGame}
         >
           Start Game
@@ -75,7 +102,7 @@ const LiveScoreboard = () => {
             </div>
             <div className="mr-2 space-x-2">
               <button
-                className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white  bg-gray-400  border border-transparent rounded-md"
+                className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white  bg-blue-400  border border-transparent rounded-md"
                 onClick={() => {
                   setSelectedGame(game);
                   setShowModal(true);
@@ -84,7 +111,7 @@ const LiveScoreboard = () => {
                 Update game
               </button>
               <button
-                className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white  bg-gray-400  border border-transparent rounded-md"
+                className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white  bg-red-400  border border-transparent rounded-md"
                 onClick={() => finishGame(game.id)}
               >
                 Finish game
