@@ -2,49 +2,93 @@ import { useState } from "react";
 import Game from "./models/Game";
 import ScoreBoard from "./models/ScoreBoard";
 import Team from "./models/Team";
+import { createPortal } from "react-dom";
+import UpdateScoreModal from "./UpdateScoreModal";
 
 const scoreboardManager = new ScoreBoard();
 
 const LiveScoreboard = () => {
   const [games, setGames] = useState<Game[]>([]);
-  const [homeTeam, setHomeTeam] = useState("");
-  const [awayTeam, setAwayTeam] = useState("");
+  const [homeTeamName, setHomeTeamName] = useState("");
+  const [awayTeamName, setAwayTeamName] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
 
   const startGame = () => {
-    const newGame = new Game(new Team(0, homeTeam), new Team(0, awayTeam));
+    const newGame = new Game(
+      new Team(0, homeTeamName),
+      new Team(0, awayTeamName)
+    );
     scoreboardManager.addGame(newGame);
-    setHomeTeam("");
-    setAwayTeam("");
+    setHomeTeamName("");
+    setAwayTeamName("");
+    refreshGames();
+  };
+
+  const updateScore = (homeScore: number, awayScore: number) => {
+    selectedGame?.updateScore(homeScore, awayScore);
     refreshGames();
   };
 
   const refreshGames = () => {
-    setGames(scoreboardManager.getSummary());
+    setGames(scoreboardManager.games);
   };
   return (
     <div>
-      <h1>Live Football World Cup Scoreboard</h1>
+      <h1 className="text-lg font-medium">
+        Live Football World Cup Scoreboard
+      </h1>
       <div>
         <input
           type="text"
           placeholder="Home Team"
-          value={homeTeam}
-          onChange={(e) => setHomeTeam(e.target.value)}
+          value={homeTeamName}
+          onChange={(e) => setHomeTeamName(e.target.value)}
         />
         <input
           type="text"
           placeholder="Away Team"
-          value={awayTeam}
-          onChange={(e) => setAwayTeam(e.target.value)}
+          value={awayTeamName}
+          onChange={(e) => setAwayTeamName(e.target.value)}
         />
-        <button onClick={startGame}>Start Game</button>
+        <button
+          className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white  bg-gray-400  border border-transparent rounded-md"
+          onClick={startGame}
+        >
+          Start Game
+        </button>
       </div>
-      <div>
+      <div className="flex flex-col gap-2 my-2">
         {games.map((game) => (
-          <div key={game.id}>
+          <div
+            key={game.id}
+            className="flex flex-row gap-2 p-4 border border-gray-400 rounded-lg items-center hover:bg-gray-200 hover:border-gray-600"
+          >
             <div>
-              {`Home Team: ${game.homeTeam.name} - ${game.homeTeam.score}, Away Team: ${game.awayTeam.name} - ${game.awayTeam.score}`}
+              Home Team: {game.homeTeam.name} - {game.homeTeam.score}, Away
+              Team: {game.awayTeam.name} - {game.awayTeam.score}
             </div>
+            <button
+              className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white  bg-gray-400  border border-transparent rounded-md"
+              onClick={() => {
+                setSelectedGame(game);
+                setShowModal(true);
+              }}
+            >
+              Update game
+            </button>
+
+            {showModal &&
+              selectedGame &&
+              createPortal(
+                <UpdateScoreModal
+                  onClose={() => setShowModal(false)}
+                  isOpen={showModal}
+                  game={selectedGame}
+                  updateScore={updateScore}
+                />,
+                document.body
+              )}
           </div>
         ))}
       </div>
